@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.apexlegendsat.springmvc.backend.DAO.UserDAO;
 import com.apexlegendsat.springmvc.backend.entity.UserEntity;
-import com.apexlegendsat.springmvc.backend.view.UserView;
 
 @Service
 @Transactional
@@ -29,67 +28,37 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean doesUserExist(UserView user) {
+	public boolean doesUserExist(UserEntity user) {
 		return findByName(user.getUsername()) != null;
 	}
 
 	@Override
-	public List<UserView> findAllUsers() {
-		
-		List<UserView> userViews = new ArrayList<UserView>();
-		userDao.findAllUserEntities().stream().forEach(userEnt -> userViews.add(convertUserEntityToUserView(userEnt)));
-		
-		return userViews;
+	public List<UserEntity> findAllUsers() {
+
+		List<UserEntity> userEntities = new ArrayList<UserEntity>();
+		userEntities = userDao.findAllUserEntities();
+
+		return userEntities;
 	}
 
 	@Override
-	public UserView findById(int id) {
-		return convertUserEntityToUserView(userDao.findUserEntityById(id));
+	public UserEntity findById(int id) {
+		return userDao.findUserEntityById(id);
 	}
 
 	@Override
-	public UserView findByName(String name) {
-		return convertUserEntityToUserView(userDao.findUserEntityByName(name));
+	public UserEntity findByName(String name) {
+		return userDao.findUserEntityByName(name);
 	}
 
 	@Override
-	public void saveUser(UserView user) {
-		userDao.saveUserEntity(convertUserViewToUserEntity(user));
+	public void saveUser(UserEntity user) {
+		userDao.saveUserEntity(user);
 	}
 
 	@Override
-	public void updateUser(UserView user) {
-		userDao.updateUserEntity(convertUserViewToUserEntity(user));
-	}
-	
-	@Override
-	public UserView convertUserEntityToUserView(UserEntity userEnt) {
-		if(userEnt == null) {
-			return null;
-		}
-		UserView userView = new UserView();
-		
-		userView.setAddress(userEnt.getAddress());
-		userView.setEmail(userEnt.getEmail());
-		userView.setUsername(userEnt.getUsername());
-		userView.setPassword(userEnt.getPassword());
-		
-		return userView;
-	}
-	
-	@Override
-	public UserEntity convertUserViewToUserEntity(UserView userView) {
-		if(userView == null) {
-			return null;
-		}
-		UserEntity userEntity = new UserEntity();
-
-		userEntity.setAddress(userView.getAddress());
-		userEntity.setEmail(userView.getEmail());
-		userEntity.setUsername(userView.getUsername());
-		userEntity.setPassword(userView.getPassword());
-		
-		return userEntity;
+	public void updateUser(UserEntity user) {
+		userDao.updateUserEntity(user);
 	}
 
 }
