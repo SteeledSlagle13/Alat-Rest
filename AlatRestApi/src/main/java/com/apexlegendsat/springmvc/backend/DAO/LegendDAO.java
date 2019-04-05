@@ -14,6 +14,6 @@ public interface LegendDAO {
 	
 	void saveLegendEntity(LegendEntity legendEntity);
 
-	LegendEntity findLegendEntityByName(String userName);
+	LegendEntity findLegendEntityByName(String legendName);
 
 }

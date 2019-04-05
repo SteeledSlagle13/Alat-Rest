@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.apexlegendsat.springmvc.backend.DAO.WeaponDAO;
 import com.apexlegendsat.springmvc.backend.entity.WeaponEntity;
-import com.apexlegendsat.springmvc.backend.view.WeaponView;
 
 @Service
 @Transactional
@@ -29,64 +28,43 @@ public class WeaponServiceImpl implements WeaponService {
 	}
 
 	@Override
-	public boolean doesWeaponExist(WeaponView weapon) {
+	public boolean doesWeaponExist(WeaponEntity weapon) {
 		return findByName(weapon.getName()) != null;
 	}
 
 	@Override
-	public List<WeaponView> findAllWeapons() {
+	public List<WeaponEntity> findAllWeapons() {
 
 		logger.info("Getting all weapons");
-		List<WeaponView> weaponViews = new ArrayList<WeaponView>();
-		weaponDao.findAllWeaponEntities().stream()
-				.forEach(weaponEnt -> weaponViews.add(convertWeaponEntityToWeaponView(weaponEnt)));
-		logger.info(weaponViews.size());
-		return weaponViews;
+
+		List<WeaponEntity> weaponEntities = new ArrayList<WeaponEntity>();
+
+		logger.info(weaponEntities.size());
+
+		weaponEntities = weaponDao.findAllWeaponEntities();
+
+		logger.debug(weaponEntities.size());
+
+		return weaponEntities;
 	}
 
 	@Override
-	public WeaponView findById(int id) {
-		return convertWeaponEntityToWeaponView(weaponDao.findWeaponEntityById(id));
+	public WeaponEntity findById(int id) {
+		return weaponDao.findWeaponEntityById(id);
 	}
 
 	@Override
-	public WeaponView findByName(String name) {
-		return convertWeaponEntityToWeaponView(weaponDao.findWeaponEntityByName(name));
+	public WeaponEntity findByName(String name) {
+		return weaponDao.findWeaponEntityByName(name);
 	}
 
 	@Override
-	public void saveWeapon(WeaponView weapon) {
-		weaponDao.saveWeaponEntity(convertWeaponViewToWeaponEntity(weapon));
+	public void saveWeapon(WeaponEntity weapon) {
+		weaponDao.saveWeaponEntity(weapon);
 	}
 
 	@Override
-	public void updateWeapon(WeaponView weapon) {
-		weaponDao.updateWeaponEntity(convertWeaponViewToWeaponEntity(weapon));
-	}
-
-	private WeaponEntity convertWeaponViewToWeaponEntity(WeaponView weaponView) {
-		if (weaponView == null) {
-			return null;
-		}
-		WeaponEntity weaponEntity = new WeaponEntity(weaponView.getId(), weaponView.getName(), weaponView.getType(),
-				weaponView.getImageSource(), weaponView.getLowDps(), weaponView.getHighDps(), weaponView.getClipSize(),
-				weaponView.getReloadTime(), weaponView.getFireRate(), weaponView.getRaiseTime(),
-				weaponView.getDamageRank(), weaponView.getSpeedRank(), weaponView.getRangeRank(),
-				weaponView.getAccuracyRank(), weaponView.getHeadShot(), weaponView.getBodyShot());
-
-		return weaponEntity;
-	}
-
-	private WeaponView convertWeaponEntityToWeaponView(WeaponEntity weaponEnt) {
-		if (weaponEnt == null) {
-			return null;
-		}
-		WeaponView weaponView = new WeaponView(weaponEnt.getId(), weaponEnt.getName(), weaponEnt.getType(),
-				weaponEnt.getImageSource(), weaponEnt.getLowDps(), weaponEnt.getHighDps(), weaponEnt.getClipSize(),
-				weaponEnt.getReloadTime(), weaponEnt.getFireRate(), weaponEnt.getRaiseTime(), weaponEnt.getDamageRank(),
-				weaponEnt.getSpeedRank(), weaponEnt.getRangeRank(), weaponEnt.getAccuracyRank(),
-				weaponEnt.getHeadShot(), weaponEnt.getBodyShot());
-
-		return weaponView;
+	public void updateWeapon(WeaponEntity weapon) {
+		weaponDao.updateWeaponEntity(weapon);
 	}
 }

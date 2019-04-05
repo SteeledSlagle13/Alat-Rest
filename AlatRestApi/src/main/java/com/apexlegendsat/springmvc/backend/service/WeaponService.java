@@ -2,22 +2,22 @@ package com.apexlegendsat.springmvc.backend.service;
 
 import java.util.List;
 
-import com.apexlegendsat.springmvc.backend.view.WeaponView;
+import com.apexlegendsat.springmvc.backend.entity.WeaponEntity;
 
 public interface WeaponService {
 	
 	void deleteWeaponById(int id);
 	
-	boolean doesWeaponExist(WeaponView weapon);
+	boolean doesWeaponExist(WeaponEntity weapon);
 
-	List<WeaponView> findAllWeapons();
+	List<WeaponEntity> findAllWeapons();
 	
-	WeaponView findById(int id);
+	WeaponEntity findById(int id);
 
-	WeaponView findByName(String name);
+	WeaponEntity findByName(String name);
 
-	void saveWeapon(WeaponView weapon);
+	void saveWeapon(WeaponEntity weapon);
 
-	void updateWeapon(WeaponView weapon);
+	void updateWeapon(WeaponEntity weapon);
 
 }

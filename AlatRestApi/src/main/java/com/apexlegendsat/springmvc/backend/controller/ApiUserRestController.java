@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.apexlegendsat.springmvc.backend.entity.UserEntity;
 import com.apexlegendsat.springmvc.backend.service.UserService;
-import com.apexlegendsat.springmvc.backend.view.UserView;
 
 @RestController
 @RequestMapping(value = "user", headers = { "Accept=application/json,application/xml" }, produces = {
@@ -34,15 +34,15 @@ public class ApiUserRestController {
 	 * @return list of users in database in JSON format
 	 */
 	@RequestMapping(value = "", method = RequestMethod.GET)
-	public ResponseEntity<List<UserView>> listAllUsers() {
-		List<UserView> userViews = userService.findAllUsers();
+	public ResponseEntity<List<UserEntity>> listAllUsers() {
+		List<UserEntity> userEntities = userService.findAllUsers();
 
 		logger.debug("should have users.");
-		if (userViews.isEmpty()) {
-			return new ResponseEntity<List<UserView>>(HttpStatus.INTERNAL_SERVER_ERROR);
+		if (userEntities.isEmpty()) {
+			return new ResponseEntity<List<UserEntity>>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		return new ResponseEntity<List<UserView>>(userViews, HttpStatus.OK);
+		return new ResponseEntity<List<UserEntity>>(userEntities, HttpStatus.OK);
 	}
 
 	/**
@@ -54,17 +54,17 @@ public class ApiUserRestController {
 	 *         found
 	 */
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
-	public ResponseEntity<UserView> getUser(@PathVariable("id") int id) {
+	public ResponseEntity<UserEntity> getUser(@PathVariable("id") int id) {
 
 		logger.debug("Fetching user with id : " + id);
-		UserView userView = userService.findById(id);
+		UserEntity userEntity = userService.findById(id);
 
-		if (userView == null) {
+		if (userEntity == null) {
 			logger.error("user with id : " + id + " not found");
-			return new ResponseEntity<UserView>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<UserEntity>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		return new ResponseEntity<UserView>(userView, HttpStatus.OK);
+		return new ResponseEntity<UserEntity>(userEntity, HttpStatus.OK);
 	}
 
 	/**
@@ -75,17 +75,17 @@ public class ApiUserRestController {
 	 * @return CREATED on Success | CONFLICT if username is in the Database
 	 */
 	@RequestMapping(value = "", method = RequestMethod.POST)
-	public ResponseEntity<Void> createUser(@RequestBody UserView user) {
+	public ResponseEntity<Boolean> createUser(@RequestBody UserEntity user) {
 		logger.debug("creating user " + user);
 
 		if (userService.doesUserExist(user)) {
 			logger.error("A User with name " + user.getUsername() + " already exist");
-			return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<Boolean>(false, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 		userService.saveUser(user);
 
-		return new ResponseEntity<Void>(HttpStatus.CREATED);
+		return new ResponseEntity<Boolean>(true, HttpStatus.CREATED);
 	}
 
 	/**
@@ -95,24 +95,20 @@ public class ApiUserRestController {
 	 * @param user - user viewable object
 	 * @return NO_CONTENT if user cannot be found | OK if update was successful
 	 */
-	@RequestMapping(value = "{id}", method = RequestMethod.PUT)
-	public ResponseEntity<UserView> updateUser(@PathVariable("id") int id, @RequestBody UserView user) {
-		logger.debug("updating user " + id);
+	@RequestMapping(value = "", method = RequestMethod.PUT)
+	public ResponseEntity<UserEntity> updateUser(@RequestBody UserEntity user) {
+		logger.debug("updating user " + user.getId());
 
-		UserView currentUser = userService.findById(id);
+		UserEntity currentUser = userService.findById(user.getId());
 
 		if (currentUser == null) {
-			logger.debug("user with id " + id + " not found");
-			return new ResponseEntity<UserView>(HttpStatus.INTERNAL_SERVER_ERROR);// 500
+			logger.debug("user with id " + user.getId() + " not found");
+			return new ResponseEntity<UserEntity>(currentUser, HttpStatus.INTERNAL_SERVER_ERROR);// 500
 		}
 
-		currentUser.setUsername(user.getUsername());
-		currentUser.setAddress(user.getAddress());
-		currentUser.setEmail(user.getEmail());
+		userService.updateUser(user);
 
-		userService.updateUser(currentUser);
-
-		return new ResponseEntity<UserView>(currentUser, HttpStatus.OK);
+		return new ResponseEntity<UserEntity>(user, HttpStatus.OK);
 	}
 
 	/**
@@ -122,17 +118,17 @@ public class ApiUserRestController {
 	 * @return NO_CONTENT
 	 */
 	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<Void> deleteUser(@PathVariable("id") int id) {
+	public ResponseEntity<Boolean> deleteUser(@PathVariable("id") int id) {
 		logger.debug("Fetching & Deleting User with id " + id);
 
-		UserView user = userService.findById(id);
+		UserEntity user = userService.findById(id);
 		if (user == null) {
 			logger.error("Unable to delete. User with id " + id + " not found");
-			return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<Boolean>(false, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 		userService.deleteUserById(id);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		return new ResponseEntity<Boolean>(true, HttpStatus.NO_CONTENT);
 	}
 
 }

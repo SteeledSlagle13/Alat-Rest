@@ -55,7 +55,7 @@ public class UserDaoImpl extends AbstractDAO implements UserDAO {
 
 		findQuery.setString("name", userName);
 
-		List resuList = findQuery.list();
+		List resultList = findQuery.list();
 
 		return (UserEntity) findQuery.uniqueResult();
 	}
